@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Copy and verify success
-#!/bin/bash
-
 # Define possible source paths
 ENGINE_RELEASE="cmake-build-release/engine"
 ENGINE_DEBUG="cmake-build-debug/engine"
@@ -31,7 +28,7 @@ START_TIME=$(date +%s.%N)
 ./engine &
 PID=$!
 # Log file header
-echo "Timestamp, PID, PSS (KB), RSS (KB), VSS (KB)" > memory_log.csv
+echo "Timestamp, PID, PSS (KB), RSS (KB), VSS (KB)" > .memory_log.csv
 
 # Initialize max values
 MAX_RSS=0
@@ -43,7 +40,7 @@ while kill -0 $PID 2>/dev/null; do
         RSS=$(awk '/VmRSS/ {print $2}' /proc/$PID/status)
         VSS=$(awk '/VmSize/ {print $2}' /proc/$PID/status)
         TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S.%3N")
-        echo "$TIMESTAMP, $PID, 0, $RSS, $VSS" >> memory_log.csv
+        echo "$TIMESTAMP, $PID, 0, $RSS, $VSS" >> .memory_log.csv
 
         # Update max values
         if [[ $RSS -gt $MAX_RSS ]]; then
@@ -57,15 +54,21 @@ while kill -0 $PID 2>/dev/null; do
 done
 END_TIME=$(date +%s.%N)  # Get the end time
 # Convert KB to GB
-MAX_RSS_GB=$(awk "BEGIN {print $MAX_RSS / 1024 / 1024}")
-MAX_VSS_GB=$(awk "BEGIN {print $MAX_VSS / 1024 / 1024}")
+MAX_RSS_MB=$(awk "BEGIN {print $MAX_RSS / 1024}")
+MAX_VSS_MB=$(awk "BEGIN {print $MAX_VSS / 1024}")
 
 # Print max recorded memory usage
-echo "Max actual memory in use (RSS): ${MAX_RSS_GB} GB"
-echo "Max memory allocated (VSS): ${MAX_VSS_GB} GB"
+echo "Max actual memory in use (RSS): ${MAX_RSS_MB} MB"
+echo "Max memory allocated (VSS): ${MAX_VSS_MB} MB"
+if (( $(echo "$MAX_VSS_MB > 2048" | bc -l) )); then
+    echo -e "\e[31mBe careful! You've exceeded the MAX memory limit, consider making your program more memory efficient\e[0m"
+elif (( $(echo "$MAX_VSS_MB > 1900" | bc -l) )); then
+    echo -e "\e[31mBe careful! You're close to the limit, consider making your program more memory efficient\e[0m"
+fi
 ELAPSED_TIME=$(echo "$END_TIME - $START_TIME" | bc)
 echo "Execution time: $ELAPSED_TIME seconds"
 
 # Cleanup
 rm -f engine
+
 cd ..
