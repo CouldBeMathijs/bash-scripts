@@ -6,6 +6,9 @@ To run, copy the script to the project folder which contains your engine, change
 ## topdf.sh
 Generates pdf's for all .tex files in the current directory (but no subdirectories thereof).
 
+## updategit.sh
+Replaces all old github repo URL's with URL's pointing to my new GitHub username
+
 ## zipper.sh
 Stores all C++ header and source files except main.cpp in a zip, for easy uploading to INGInious or BlackBoard.
 
