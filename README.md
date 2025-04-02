@@ -1,4 +1,7 @@
 # A Few Bash Scripts
+## .bashrc
+We all know what this is. The base of this file is the Linutil, it requires Nerdfonts. Includes `clip` function to copy files directly to the clipboard (when on wayland).
+
 ## memcheck.sh
 This script runs the Computer Graphics course engine and checks the memory usage.
 To run, copy the script to the project folder which contains your engine, change the Destination folder variable in the script to the working directory you wish to run the engine out of, save, exit and run the script.
