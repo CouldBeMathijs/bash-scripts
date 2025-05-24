@@ -7,7 +7,7 @@ DEST_DIR="ini"
 
 # Ensure the destination directory exists
 if [ ! -d "$DEST_DIR" ]; then
-  echo "Error: Destination directory '$DEST_DIR' does not exist."
+  echo "[ERROR]: Destination directory '$DEST_DIR' does not exist."
   exit 1
 fi
 
@@ -17,12 +17,12 @@ if [ -f "$ENGINE_RELEASE" ]; then
 elif [ -f "$ENGINE_DEBUG" ]; then
   cp "$ENGINE_DEBUG" "$DEST_DIR" && echo "Copied from debug build."
 else
-  echo "Error: 'engine' file not found in either build directory."
+  echo "[ERROR]: 'engine' file not found in either build directory."
   exit 1
 fi
 
 # Change to the destination directory
-cd "$DEST_DIR" || { echo "Error: Failed to change directory to '$DEST_DIR'"; exit 1; }
+cd "$DEST_DIR" || { echo "[ERROR]: Failed to change directory to '$DEST_DIR'"; exit 1; }
 # Run the engine in the background
 START_TIME=$(date +%s.%N)
 ./engine &
@@ -53,7 +53,7 @@ while kill -0 $PID 2>/dev/null; do
     sleep 0.1
 done
 END_TIME=$(date +%s.%N)  # Get the end time
-# Convert KB to GB
+# Convert KB to MB
 MAX_RSS_MB=$(awk "BEGIN {print $MAX_RSS / 1024}")
 MAX_VSS_MB=$(awk "BEGIN {print $MAX_VSS / 1024}")
 

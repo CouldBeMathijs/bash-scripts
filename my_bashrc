@@ -637,9 +637,15 @@ eval "$(zoxide init bash)"
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 alias topgrade='topgrade --disable pnpm node cargo'
 alias pbp='pbpctrl show battery'
-# Copy to clipboard function
 clip() {
-    cat "$1" | wl-copy
+    if [ $# -eq 0 ]; then
+        wl-copy
+    elif [ -f "$1" ]; then
+        cat "$1" | wl-copy
+    else
+        "$@" | wl-copy
+    fi
 }
 
 alias gitstart="git init; git add .; git commit -m 'Initial Commit'"
+. "$HOME/.cargo/env"
