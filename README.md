@@ -1,7 +1,7 @@
 # A Few Bash Scripts
 ## clip.sh
 Copies a file or output from a command to the clipboard.
-_Wayland only, depends on_ `wl-copy`
+_Depends on_ `wl-copy` _when using Wayland, or_ `xclip` _when using X.org_
 
 ## memcheck.sh
 This script runs the Computer Graphics course engine and checks the memory usage.
