@@ -1,6 +1,7 @@
 # A Few Bash Scripts
 ## clip.sh
 Copies a file or output from a command to the clipboard.
+
 _Depends on_ `wl-copy` _when using Wayland, or_ `xclip` _when using X.org_
 
 ## memcheck.sh
@@ -9,18 +10,22 @@ To run, copy the script to the project folder which contains your engine, change
 
 ## topdf.sh
 Generates pdf's for all .tex files in the current directory (but no subdirectories thereof).
+
 _Depends on_ `pdflatex`
 
 ## updategit.sh
 Replaces all old github repo URL's with URL's pointing to my new GitHub username
+
 _Depends on_ `git`_, must be personalized before use_
 
 ## zipper.sh
 Stores all C++ header and source files except main.cpp in a zip, for easy uploading to INGInious or BlackBoard.
+
 _Depends on_ `zip`
 
 ## ziptotar.sh
 Replaces all .zip's with equivalent .tar.xz files from the directory the script is ran downwards, .tar.xz is more space efficient, but be careful as some programs store files in zips and you do not want to overwrite those!
+
 _Depends on_ `tar` `unzip`
 
 ## replace_every.sh
