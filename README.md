@@ -3,6 +3,10 @@
 Copies a file or output from a command to the clipboard.  
 _Depends on_ `wl-copy` _when using Wayland, or_ `xclip` _when using X.org_
 
+## flake-update.
+Pulls down the latest changes made on a nix flake.  
+_Depends on_ `nix` `nh` `git`
+
 ## memcheck.sh
 This script runs the Computer Graphics course engine and checks the memory usage.
 To run, copy the script to the project folder which contains your engine, change the Destination folder variable in the script to the working directory you wish to run the engine out of, save, exit and run the script.
