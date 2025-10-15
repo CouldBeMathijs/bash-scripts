@@ -6,7 +6,6 @@ DEFAULT_PATH="$HOME/.dotfiles"
 # Set the FLAKE_DIR
 if [ -z "$1" ]; then
     FLAKE_DIR="$DEFAULT_PATH"
-    echo "No path provided. Defaulting to: $FLAKE_DIR"
 else
     FLAKE_DIR="$1"
 fi
