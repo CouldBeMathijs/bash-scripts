@@ -40,6 +40,7 @@ cp "$FLAKE_LOCK" "$TEMP_LOCK"
     cd "$FLAKE_DIR" || exit 1
     # The '|| exit 1' ensures the script stops the subshell if git pull fails
     if git pull; then
+            sleep 1
     else
         echo "Error: Git pull failed in $FLAKE_DIR."
         rm -f "$TEMP_LOCK"
