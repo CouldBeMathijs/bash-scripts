@@ -27,7 +27,7 @@ _Depends on_ `zip`
 Replaces all .zip's with equivalent .tar.xz files from the directory the script is ran downwards, .tar.xz is more space efficient, but be careful as some programs store files in zips and you do not want to overwrite those!  
 _Depends on_ `tar` `unzip`
 
-## replace_every.sh
+## replace-every.sh
 Replaces all instances of <argument1> with <argument2> within plaintext file contents and file/directory names for every file withing the folder <argument3>
 
 

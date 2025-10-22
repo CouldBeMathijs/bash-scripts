@@ -7,19 +7,14 @@ set -e
 
 # Check for exactly 3 arguments
 if [ "$#" -ne 3 ]; then
-        echo "Usage: $0 <search_string> <replace_string> <folder_path>"
+        # echo "Usage: $0 <search_string> <replace_string> <folder_path>"
+        echo "Usage: replace-every <folder_path> <search_string> <replace_string>"
         exit 1
 fi
 
-search="$1"
-replace="$2"
-folder="$3"
-
-echo "=== Replacement Script Started ==="
-echo "Search string    : '$search'"
-echo "Replace string   : '$replace'"
-echo "Target directory : '$folder'"
-echo
+folder="$1"
+search="$2"
+replace="$3"
 
 # Ensure folder exists
 if [ ! -d "$folder" ]; then
@@ -65,10 +60,6 @@ replace_in_file() {
         fi
 }
 
-# --- Shared find command setup ---
-# FIX: Use -prune on the .git directory and then explicitly exclude the 
-# directory path from printing using the conditional NOT operator '!'.
-# This ensures neither the directory itself nor its contents are processed.
 FIND_CMD="find \"$folder\" -depth \( -path '*/.git' -o -path '*/.git/*' \) -prune -o -print"
 
 
