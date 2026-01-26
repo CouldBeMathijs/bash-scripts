@@ -5,7 +5,7 @@ _Depends on_ `wl-copy` _when using Wayland, or_ `xclip` _when using X.org_
 
 ## flake-update.
 Pulls down the latest changes made on a nix flake.  
-_Depends on_ `nix` `nh` `git`
+_Depends on_ `nix` `nh` `git` and `jq`
 
 ## memcheck.sh
 This script runs the Computer Graphics course engine and checks the memory usage.

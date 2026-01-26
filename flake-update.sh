@@ -25,7 +25,7 @@ if [ ! -f "$FLAKE_LOCK" ]; then
 fi
 
 echo "--- Updating Nix Flake in $FLAKE_DIR ---"
-
+echo
 # Save the pre-pull state of flake.lock using a portable mktemp
 TEMP_LOCK=$(mktemp 2>/dev/null || mktemp -t 'flk')
 if [ -z "$TEMP_LOCK" ]; then
@@ -40,7 +40,7 @@ cp "$FLAKE_LOCK" "$TEMP_LOCK"
     cd "$FLAKE_DIR" || exit 1
     # The '|| exit 1' ensures the script stops the subshell if git pull fails
     if git pull; then
-            sleep 1
+            sleep 0.1
     else
         echo "Error: Git pull failed in $FLAKE_DIR."
         rm -f "$TEMP_LOCK"
@@ -50,11 +50,16 @@ cp "$FLAKE_LOCK" "$TEMP_LOCK"
 
 # Check for changes in flake.lock
 # Use 'diff' to compare and check the exit status
-if ! diff -u "$TEMP_LOCK" "$FLAKE_LOCK" >/dev/null; then
-    echo "--- Changes Detected ---"
-    # Display the differences
-    diff -u "$TEMP_LOCK" "$FLAKE_LOCK"
-    echo "-----------------------------------------------------"
+if ! diff -q "$TEMP_LOCK" "$FLAKE_LOCK" >/dev/null; then
+    echo
+    echo "--- Updated Repositories ---"
+    echo " --"
+    # Run jq, then indent every result by 4 spaces
+    jq -r --argjson old "$(cat "$TEMP_LOCK")" \
+      '.nodes | to_entries[] | select(.key != "root" and .value != $old.nodes[.key]) | .key' \
+      "$FLAKE_LOCK" | sed 's/^/    /'
+    echo " --"
+    echo
 fi
 
 # Clean up the temporary file
