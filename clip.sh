@@ -1,29 +1,38 @@
 #!/bin/bash
 
-# Check if a Wayland session is active
-if [ -n "$WAYLAND_DISPLAY" ]; then
-        COPY_CMD="wl-copy"
-        # Check if an X11 session is active
+# Function to copy using OSC 52 (Works over SSH)
+osc52_copy() {
+    local base64_data
+    base64_data=$(base64 | tr -d '\n')
+    printf "\e]52;c;%s\a" "$base64_data"
+}
+
+# 1. Check if we are in an SSH session
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    COPY_CMD="osc52_copy"
+# 2. Local Wayland check
+elif [ -n "$WAYLAND_DISPLAY" ]; then
+    COPY_CMD="wl-copy"
+# 3. Local X11 check
 elif [ -n "$DISPLAY" ]; then
-        # X11, prefer xclip
-        if command -v xclip &> /dev/null; then
-                COPY_CMD="xclip -selection clipboard"
-                # Fallback to xsel if xclip isn't available
-        elif command -v xsel &> /dev/null; then
-                COPY_CMD="xsel --clipboard"
-        else
-                echo "Error: Neither wl-copy, xclip, nor xsel found. Please install a clipboard utility." >&2
-                exit 1
-        fi
+    if command -v xclip &> /dev/null; then
+        COPY_CMD="xclip -selection clipboard"
+    elif command -v xsel &> /dev/null; then
+        COPY_CMD="xsel --clipboard"
+    else
+        COPY_CMD="osc52_copy" # Fallback to OSC52 if utilities are missing
+    fi
 else
-        echo "Error: Could not detect display server. Neither WAYLAND_DISPLAY nor DISPLAY is set." >&2
-        exit 1
+    # Final fallback for headless/TTY
+    COPY_CMD="osc52_copy"
 fi
 
+# Execution Logic
 if [ $# -eq 0 ]; then
-        echo "No arguments provided. Quitting $COPY_CMD"
+    echo "No arguments provided. Usage: script.sh [file] or [command]"
+    exit 1
 elif [ -f "$1" ]; then
-        cat "$1" | $COPY_CMD
+    cat "$1" | $COPY_CMD
 else
-        "$@" | $COPY_CMD
+    "$@" | $COPY_CMD
 fi
