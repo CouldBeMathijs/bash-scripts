@@ -21,11 +21,12 @@
             myDeps =
               with pkgs;
               [
-                jq
+                bash
                 git
+                gnutar
                 unzip
                 zip
-                gnutar
+                jq
               ]
               ++ (
                 if stdenv.isLinux then
