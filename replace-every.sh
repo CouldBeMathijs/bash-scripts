@@ -60,7 +60,7 @@ replace_in_file() {
         fi
 }
 
-FIND_CMD="find \"$folder\" -depth \( -path '*/.git' -o -path '*/.git/*' \) -prune -o -print"
+FIND_CMD="find \"$folder\" -depth \( -path '*/.*' -o -path '*/.*/*' \) -prune -o -print"
 
 
 # --- Dry Run Execution ---
