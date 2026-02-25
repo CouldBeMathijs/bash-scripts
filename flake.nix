@@ -17,37 +17,45 @@
         system:
         let
           pkgs = forAllSystems.${system};
-
-          makeMyScripts =
+          scriptBuilder =
             {
-              withWayland ? pkgs.stdenv.isLinux,
-              withX11 ? pkgs.stdenv.isLinux,
+              lib,
+              stdenv,
+              makeWrapper,
+              bash,
+              git,
+              gnutar,
+              unzip,
+              zip,
+              jq,
+              wl-clipboard,
+              xclip,
+              withWayland ? stdenv.isLinux,
+              withX11 ? stdenv.isLinux,
             }:
             let
-              myDeps =
-                with pkgs;
-                [
-                  bash
-                  git
-                  gnutar
-                  unzip
-                  zip
-                  jq
-                ]
-                ++ (if withWayland then [ wl-clipboard ] else [ ])
-                ++ (if withX11 then [ xclip ] else [ ]);
+              myDeps = [
+                bash
+                git
+                gnutar
+                unzip
+                zip
+                jq
+              ]
+              ++ (if withWayland then [ wl-clipboard ] else [ ])
+              ++ (if withX11 then [ xclip ] else [ ]);
             in
-            pkgs.stdenv.mkDerivation {
+            stdenv.mkDerivation {
               pname = "my-bash-scripts";
               version = "1.0.0";
               src = ./.;
 
-              nativeBuildInputs = [ pkgs.makeWrapper ];
+              nativeBuildInputs = [ makeWrapper ];
               buildInputs = myDeps;
 
               installPhase = ''
                 mkdir -p $out/bin
-                binPath="${nixpkgs.lib.makeBinPath myDeps}"
+                binPath="${lib.makeBinPath myDeps}"
 
                 for script in $src/*.sh; do
                   name=$(basename "$script" .sh)
@@ -60,7 +68,7 @@
             };
         in
         {
-          default = makeMyScripts { };
+          default = pkgs.callPackage scriptBuilder { };
         }
       );
     };
