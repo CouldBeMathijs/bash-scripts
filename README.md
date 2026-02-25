@@ -1,19 +1,15 @@
 # A Few Bash Scripts
 ## clip.sh
 Copies a file or output from a command to the clipboard.  
-_Depends on_ `wl-copy` _when using Wayland, or_ `xclip` _when using X.org_
+_Depends on_ `wl-copy` _when using Wayland, or_ `xclip` _when using X.org, also works over ssh_
 
 ## flake-update.
 Pulls down the latest changes made on a nix flake.  
 _Depends on_ `nix` `nh` `git` and `jq`
 
-## memcheck.sh
-This script runs the Computer Graphics course engine and checks the memory usage.
-To run, copy the script to the project folder which contains your engine, change the Destination folder variable in the script to the working directory you wish to run the engine out of, save, exit and run the script.
-
 ## topdf.sh
 Generates pdf's for all .tex files in the current directory (but no subdirectories thereof).   
-_Depends on_ `pdflatex`
+_Depends on_ `pdflatex` _(which is not installed in the flake by default, as it takes a few gigabytes of space if latex wasn't already installed)_
 
 ## updategit.sh
 Replaces all old github repo URL's with URL's pointing to my new GitHub username.  

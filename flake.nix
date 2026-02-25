@@ -13,56 +13,55 @@
       forAllSystems = nixpkgs.lib.genAttrs systems (system: import nixpkgs { inherit system; });
     in
     {
-      packages = nixpkgs.lib.genAttrs systems (system: {
-        default =
-          let
-            pkgs = forAllSystems.${system};
+      packages = nixpkgs.lib.genAttrs systems (
+        system:
+        let
+          pkgs = forAllSystems.${system};
 
-            myDeps =
-              with pkgs;
-              [
-                bash
-                git
-                gnutar
-                unzip
-                zip
-                jq
-              ]
-              ++ (
-                if stdenv.isLinux then
-                  [
-                    wl-clipboard
-                    xclip
-                  ]
-                else
-                  [ ]
-              );
+          makeMyScripts =
+            {
+              withWayland ? pkgs.stdenv.isLinux,
+              withX11 ? pkgs.stdenv.isLinux,
+            }:
+            let
+              myDeps =
+                with pkgs;
+                [
+                  bash
+                  git
+                  gnutar
+                  unzip
+                  zip
+                  jq
+                ]
+                ++ (if withWayland then [ wl-clipboard ] else [ ])
+                ++ (if withX11 then [ xclip ] else [ ]);
+            in
+            pkgs.stdenv.mkDerivation {
+              pname = "my-bash-scripts";
+              version = "1.0.0";
+              src = ./.;
 
-          in
-          pkgs.stdenv.mkDerivation {
-            pname = "my-bash-scripts";
-            version = "1.0.0";
-            src = ./.;
+              nativeBuildInputs = [ pkgs.makeWrapper ];
+              buildInputs = myDeps;
 
-            nativeBuildInputs = [ pkgs.makeWrapper ];
-            buildInputs = myDeps;
+              installPhase = ''
+                mkdir -p $out/bin
+                binPath="${nixpkgs.lib.makeBinPath myDeps}"
 
-            installPhase = ''
-              mkdir -p $out/bin
-
-              binPath="${nixpkgs.lib.makeBinPath myDeps}"
-
-              for script in $src/*.sh; do
-                name=$(basename "$script" .sh)
-                dest="$out/bin/$name"
-                
-                cp "$script" "$dest"
-                chmod +x "$dest"
-                
-                wrapProgram "$dest" --prefix PATH : "$binPath"
-              done
-            '';
-          };
-      });
+                for script in $src/*.sh; do
+                  name=$(basename "$script" .sh)
+                  dest="$out/bin/$name"
+                  cp "$script" "$dest"
+                  chmod +x "$dest"
+                  wrapProgram "$dest" --prefix PATH : "$binPath"
+                done
+              '';
+            };
+        in
+        {
+          default = makeMyScripts { };
+        }
+      );
     };
 }
