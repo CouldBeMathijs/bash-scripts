@@ -26,6 +26,9 @@ _Depends on_ `tar` `unzip`
 ## replace-every.sh
 Replaces all instances of <argument1> with <argument2> within plaintext file contents and file/directory names for every file withing the folder <argument3>
 
+## os-age.sh
+Prints the amount of days since system installation, use `-y` to view more detailed info
+
 
 ---------------------------------------------------------
 
