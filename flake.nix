@@ -47,8 +47,8 @@
             in
             stdenv.mkDerivation {
               pname = "my-bash-scripts";
-              version = "1.0.0";
-              src = ./.;
+              version = "0-unstable-${self.lastModifiedDate or "dirty"}";
+              src = self;
 
               nativeBuildInputs = [ makeWrapper ];
               buildInputs = myDeps;
@@ -57,9 +57,12 @@
                 mkdir -p $out/bin
                 binPath="${lib.makeBinPath myDeps}"
 
-                for script in $src/*.sh; do
-                  name=$(basename "$script" .sh)
+                for script in $src/scripts/*; do
+                  [ -f "$script" ] || continue
+                  
+                  name=$(basename "$script")
                   dest="$out/bin/$name"
+                  
                   cp "$script" "$dest"
                   chmod +x "$dest"
                   wrapProgram "$dest" --prefix PATH : "$binPath"
