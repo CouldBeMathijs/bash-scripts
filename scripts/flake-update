@@ -26,6 +26,7 @@ fi
 
 echo "--- Updating Nix Flake in $FLAKE_DIR ---"
 echo
+
 # Save the pre-pull state of flake.lock using a portable mktemp
 TEMP_LOCK=$(mktemp 2>/dev/null || mktemp -t 'flk')
 if [ -z "$TEMP_LOCK" ]; then
@@ -35,26 +36,33 @@ fi
 
 cp "$FLAKE_LOCK" "$TEMP_LOCK"
 
-# Navigate to the directory and run git pull
-(
-    cd "$FLAKE_DIR" || exit 1
-    # The '|| exit 1' ensures the script stops the subshell if git pull fails
-    if git pull; then
-            sleep 0.1
-    else
-        echo "Error: Git pull failed in $FLAKE_DIR."
-        rm -f "$TEMP_LOCK"
-        exit 1
-    fi
-)
+# Run git pull
+PULL_OUTPUT=$(cd "$FLAKE_DIR" && git pull 2>&1)
+PULL_STATUS=$?
+
+if [ "$PULL_STATUS" -ne 0 ]; then
+    rm -f "$TEMP_LOCK"
+    case "$PULL_OUTPUT" in
+        *Could\ not\ resolve*|*Network\ is\ unreachable*|*Connection\ timed\ out*|*Could\ not\ read\ from\ remote*|*ssh:*)
+            echo "Error: No internet connection or remote host unreachable."
+            ;;
+        *)
+            echo "Error: Git pull failed in $FLAKE_DIR:"
+            echo "$PULL_OUTPUT"
+            ;;
+    esac
+    exit 1
+else
+    echo "$PULL_OUTPUT"
+fi
+
+sleep 0.1
 
 # Check for changes in flake.lock
-# Use 'diff' to compare and check the exit status
-if ! diff -q "$TEMP_LOCK" "$FLAKE_LOCK" >/dev/null; then
+if ! diff -q "$TEMP_LOCK" "$FLAKE_LOCK" >/dev/null 2>&1; then
     echo
     echo "--- Updated Repositories ---"
     echo " --"
-    # Run jq, then indent every result by 4 spaces
     jq -r --argjson old "$(cat "$TEMP_LOCK")" \
       '.nodes | to_entries[] | select(.key != "root" and .value != $old.nodes[.key]) | .key' \
       "$FLAKE_LOCK" | sed 's/^/    /'
@@ -65,4 +73,3 @@ fi
 # Clean up the temporary file
 rm -f "$TEMP_LOCK"
 
-echo "--- Operation Complete ---"
