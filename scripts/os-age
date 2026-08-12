@@ -5,11 +5,12 @@ current=$(date +%s)
 
 mode="days"
 
-while getopts "yd" opt; do
+while getopts "ydt" opt; do
     case ${opt} in
         y) mode="detailed" ;;
         d) mode="days" ;;
-        *) echo "Usage: $0 [-d] [-y]" >&2; exit 1 ;;
+        t) mode="installation date" ;;
+        *) echo "Usage: $0 [-d] [-y] [-t]" >&2; exit 1 ;;
     esac
 done
 
@@ -17,7 +18,7 @@ if [ "$mode" = "days" ]; then
     time_progression=$((current - birth_install))
     days_difference=$((time_progression / 86400))
     echo "${days_difference} days"
-else
+elif [ "$mode" = "detailed" ]; then
     birth_Y=$((10#$(date -d "@$birth_install" +%Y)))
     birth_M=$((10#$(date -d "@$birth_install" +%m)))
     birth_D=$((10#$(date -d "@$birth_install" +%d)))
@@ -42,4 +43,7 @@ else
     fi
 
     echo "${years} years, ${months} months, ${days} days"
+else
+    install_date=$(date -d "@$birth_install" "+%Y-%m-%d")
+    echo "${install_date}"
 fi
