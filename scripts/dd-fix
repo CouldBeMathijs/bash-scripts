@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+lsblk
+echo "What device are you trying to write to"?
+read -r device
+sudo systemctl stop udisks2 || exit
+sudo umount "$device" || exit
+pkill udiskie
+sudo wipefs -a "$device"

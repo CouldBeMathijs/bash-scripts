@@ -3,6 +3,9 @@
 Copies a file or output from a command to the clipboard.  
 _Depends on_ `wl-copy` _when using Wayland, or_ `xclip` _when using X.org, also works over ssh_
 
+## dd-fix
+Tries to stop Noctalia and Niri from making _dd_ fail.
+
 ## flake-update
 Pulls down the latest changes made on a nix flake and nicely displays which inputs were updated. Does not run `nix flake update` but assumes you have a GitHub action or some other way of updating the repo remotely.
 _Depends on_ `nix` `nh` `git` and `jq`
